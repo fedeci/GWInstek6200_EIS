@@ -8,9 +8,9 @@ import numpy as np
 def plot(frequencies, mag, phase):
     mag_mean = np.mean(mag, axis=1)
     mag_std = np.std(mag, axis=1)
-
-    phase_mean = np.mean(phase, axis=1)
-    phase_std = np.std(phase, axis=1)
+    unwrapped_phase = np.unwrap(phase)
+    phase_mean = np.mean(unwrapped_phase, axis=1)
+    phase_std = np.std(unwrapped_phase, axis=1)
 
     # --- Plotting ---
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))

@@ -58,7 +58,7 @@ class Meter:
         # undocumented, but TRIG:IMM returns an empty line when the measurement is complete; i.e. we can immediately perform a fetch after a trigger because self.conn.readline will block the program until the trigger is complete
 
     def decode_fetch(self, bytes: bytes):
-        mag, phase, _ = bytes.decode("utf-8").split(",")
+        mag, phase, _, _, _ = bytes.decode("utf-8").split(",")
         print(f"\t{mag}\t{phase}")
         return float(mag.strip()), float(phase.strip())
 
