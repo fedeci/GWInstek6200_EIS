@@ -91,7 +91,7 @@ if __name__ == "__main__":
   print(f"Running sweep across {frequencies} frequencies...")
 
   mag, phase = meter.sweep(
-    frequencies=args.frequencies,
+    frequencies=frequencies,
     level=args.level,
     bias=args.bias,
     average=args.average,
