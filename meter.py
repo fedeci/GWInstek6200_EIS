@@ -84,13 +84,14 @@ class Meter:
             # trigger two times to reset the value
             for _ in range(2):
                 self.trigger_fetch()
+                time.sleep(0.5)
 
             for _ in range(self.average):
                 raw = self.trigger_fetch()
                 data = self.decode_fetch(raw)
                 results_magnitude[i].append(data[0])
                 results_phase[i].append(data[1])
-                time.sleep(0.01)
+                time.sleep(0.05)
 
         return np.array(results_magnitude), np.array(results_phase)
 
