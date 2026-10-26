@@ -16,6 +16,10 @@ class Meter:
         self.conn = serial.Serial(self.port, self.baudrate, timeout=1.5 * max(SLOW_SCAN_SPEED_FREQUENCY) / 1000)
         time.sleep(0.1)
 
+    def set_meas_page(self):
+        self.conn.write(b"DISP:PAGE MEAS\n")
+        time.sleep(1)
+
     def set_function_impedance(self):
         self.conn.write(b'FUNC Z-thd\n')
         time.sleep(0.1)
@@ -45,22 +49,21 @@ class Meter:
     def set_trigger(self):
         self.conn.write(b"TRIG:SOUR BUS\n")
         time.sleep(0.1)
+        self.conn.write(b"TRIG:DLY min\n")
+        time.sleep(0.1)
 
-    def trigger(self):
-        self.conn.write(b"TRIG:IMM\n")
-        self.conn.readline()  
+    def trigger_fetch(self):
+        self.conn.write(b"*TRG\n")
+        return self.conn.readline()  
         # undocumented, but TRIG:IMM returns an empty line when the measurement is complete; i.e. we can immediately perform a fetch after a trigger because self.conn.readline will block the program until the trigger is complete
 
-    def fetch(self):
-        self.conn.write(b'FETC:MAIN?\n')
-        return self.conn.readline() # it waits for an entire line until serial.Serial timeouts
-
     def decode_fetch(self, bytes: bytes):
-        mag, phase = bytes.decode("utf-8").split(",")
+        mag, phase, _ = bytes.decode("utf-8").split(",")
         print(f"\t{mag}\t{phase}")
         return float(mag.strip()), float(phase.strip())
 
     def sweep(self, frequencies, level, bias, average):
+        self.set_meas_page()
         self.set_function_impedance()
         self.set_bias_voltage(bias)
         self.set_stim_voltage(level)
@@ -80,15 +83,14 @@ class Meter:
 
             # trigger two times to reset the value
             for _ in range(2):
-                self.trigger()
+                self.trigger_fetch()
 
             for _ in range(self.average):
-                self.trigger()
-                raw = self.fetch()
+                raw = self.trigger_fetch()
                 data = self.decode_fetch(raw)
                 results_magnitude[i].append(data[0])
                 results_phase[i].append(data[1])
-                time.sleep(0.05)
+                time.sleep(0.01)
 
         return np.array(results_magnitude), np.array(results_phase)
 
