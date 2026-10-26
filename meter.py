@@ -80,6 +80,11 @@ class Meter:
       self.set_frequency(frequency)
       print(f"Set frequency to {frequency}.")
 
+      # trigger two times to reset the value
+      for _ in range(2):
+        self.trigger()
+        time.sleep(delay)
+
       for _ in range(self.average):
         self.trigger()
         time.sleep(delay)
