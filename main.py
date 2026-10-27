@@ -114,10 +114,11 @@ if __name__ == "__main__":
     print(f"Running sweep across {frequencies} frequencies...")
 
     if args.mode == "STA":
-        fn = meter.sweep_short_time_avg
         if len(args.bias) > 1:
+            fn = meter.sweep_short_time_avg_multi_bias
             bias = args.bias
         else:
+            fn = meter.sweep_short_time_avg
             bias = args.bias[0]
     elif args.mode == "LTA":
         fn = meter.sweep_long_time_avg

@@ -124,13 +124,15 @@ class Meter:
 
         return np.array(results_magnitude).T, np.array(results_phase).T
 
+    def sweep_short_time_avg_multi_bias(self, frequencies, level, bias, average):
+        res_mag = []
+        res_phase = []
+        for b in bias:
+            result = self.sweep_short_time_avg(frequencies, level, b, average)
+            res_mag.append(result[0])
+            res_phase.append(result[1])
 
-    def sweep_short_time_avg_multi_bias(self, frequencies, level, biases, average):
-        results = []
-        for bias in biases:
-            results.append(self.sweep_short_time_avg(frequencies, level, bias, average))
-
-        return results
+        return res_mag, res_phase
 
     def __del__(self):
         self.conn.close()
